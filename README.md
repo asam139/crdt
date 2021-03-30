@@ -1,2 +1,3 @@
 # crdt
-State-based LWW-Element-Graph
+
+A description of this package.
