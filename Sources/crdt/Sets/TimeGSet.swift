@@ -26,7 +26,7 @@ public struct TimeGSet<T: Hashable> {
     /// Checks if the current set is a subset of another one.
     /// - Parameter set: The other set.
     /// - Returns: A Boolean value indicating whether the instance is a subset.
-    @inlinable public func isSubsetOf(_ set: Self<T>) -> Bool {
+    @inlinable public func isSubset(of set: Self<T>) -> Bool {
         dates.allSatisfy { set.lookup($0.key) != nil }
     }
     
@@ -34,7 +34,9 @@ public struct TimeGSet<T: Hashable> {
     /// - Parameter element: The element to add.
     /// - Parameter date: The date when `element` was added into this set. By default the current system date is used.
     @inlinable public mutating func add(_ element: T, date: Date = Date()) {
-        guard let previousDate = lookup(element), previousDate < date else { return }
+        if let previousDate = lookup(element), previousDate >= date {
+            return
+        }
         dates[element] = date
     }
     

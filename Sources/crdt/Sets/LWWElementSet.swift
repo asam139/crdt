@@ -31,8 +31,8 @@ public struct LWWElementSet<T: Hashable> {
     /// Checks if the current set is a subset of another one.
     /// - Parameter set: The other set.
     /// - Returns: A Boolean value indicating whether the instance is a subset.
-    @inlinable public func isSubsetOf(_ set: LWWElementSet<T>) -> Bool {
-        addSet.isSubsetOf(set.addSet) && removeSet.isSubsetOf(set.removeSet)
+    @inlinable public func isSubset(of set: LWWElementSet<T>) -> Bool {
+        addSet.isSubset(of: set.addSet) && removeSet.isSubset(of: set.removeSet)
     }
     
     /// Adds an element to this set.
