@@ -27,14 +27,20 @@ public extension LWWElementGraph {
     /// Returns the effective edges, namely, the added but not removed elements.
     @inlinable var edges: Set<LWWEdge> { edgesSet.elements }
 
-    
+
     @inlinable mutating func addVertice(_ element: T, date: Date = Date()) {
         verticesSet.add(element, date: date)
     }
 
     @discardableResult
     @inlinable mutating func removeVertice(_ element: T, date: Date = Date()) -> Bool {
-        removeVertice(element, date: date, checkInvalidEdges: true)
+        let wasRemoved = verticesSet.remove(element, date: date)
+        if wasRemoved { // Remove invalid edges
+            edgesSet.elements.filter { $0.contains(element) }.forEach {
+                edgesSet.remove($0, date: date)
+            }
+        }
+        return wasRemoved
     }
 
     @discardableResult
@@ -59,11 +65,11 @@ public extension LWWElementGraph {
             let elements = edgesSet.elements
 
             if elements.contains(where: { $0.contains(from) }) { // `from` has other edges
-                removeVertice(from, date: date, checkInvalidEdges: false)
+                verticesSet.remove(from, date: date)
             }
 
             if elements.contains(where: { $0.contains(to) }) { // `to` has other edges
-                removeVertice(to, date: date, checkInvalidEdges: false)
+                verticesSet.remove(to, date: date)
             }
         }
         return wasRemoved
@@ -72,14 +78,5 @@ public extension LWWElementGraph {
 
 // MARK: - Private Methods
 internal extension LWWElementGraph {
-    @discardableResult
-    @inlinable mutating func removeVertice(_ element: T, date: Date = Date(), checkInvalidEdges: Bool) -> Bool {
-        let wasRemoved = verticesSet.remove(element, date: date)
-        if checkInvalidEdges && wasRemoved { // Remove invalid edges
-            edgesSet.elements.filter { $0.contains(element) }.forEach {
-                edgesSet.remove($0, date: date)
-            }
-        }
-        return wasRemoved
-    }
+    
 }
