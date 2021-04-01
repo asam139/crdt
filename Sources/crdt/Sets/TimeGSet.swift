@@ -23,10 +23,14 @@ public struct TimeGSet<T: Hashable> {
     }
     
     /// Returns the date when `element` was added to this set, if it was added.
-    /// Check if the current set is a subset of another one.
     /// - Parameter element: The element to search.
     /// - Returns: A Date value indicating whether the element was added or nil.
     @inlinable public func lookup(_ element: T) -> Date? { dates[element] }
+
+    /// Returns a Boolean value indicating whether `element` was added to this set.
+    /// - Parameter element: The element to search.
+    /// - Returns: A Boolean value indicating whether the element was added.
+    @inlinable public func exists(_ element: T) -> Bool { lookup(element) != nil }
     
     /// Checks if the current set is a subset of another one.
     /// - Parameter set: The other set.

@@ -31,6 +31,11 @@ public struct LWWElementSet<T: Hashable> {
 
         return addDate > removeDate ? addDate : nil
     }
+
+    /// Returns a Boolean value indicating whether `element` was added but not removed to this set.
+    /// - Parameter element: The element to search.
+    /// - Returns: A Boolean value indicating whether the element was added.
+    @inlinable public func exists(_ element: T) -> Bool { lookup(element) != nil }
     
     /// Checks if the current set is a subset of another one.
     /// - Parameter set: The other set.

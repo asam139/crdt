@@ -28,12 +28,12 @@ public extension LWWElementGraph {
     @inlinable var edges: Set<LWWEdge> { edgesSet.elements }
 
 
-    @inlinable mutating func addVertice(_ element: T, date: Date = Date()) {
+    @inlinable mutating func addVertex(_ element: T, date: Date = Date()) {
         verticesSet.add(element, date: date)
     }
 
     @discardableResult
-    @inlinable mutating func removeVertice(_ element: T, date: Date = Date()) -> Bool {
+    @inlinable mutating func removeVertex(_ element: T, date: Date = Date()) -> Bool {
         let wasRemoved = verticesSet.remove(element, date: date)
         if wasRemoved { // Remove invalid edges
             edgesSet.elements.filter { $0.contains(element) }.forEach {
@@ -74,9 +74,26 @@ public extension LWWElementGraph {
         }
         return wasRemoved
     }
+
+    @inlinable func existsVertex(_ element: T) -> Bool { verticesSet.exists(element) }
+
+    @inlinable func verticesConnectedTo(_ element: T) -> [T] {
+        edgesSet.elements.compactMap { edge in
+            if edge.to == element {
+                return edge.from
+            } else if edge.from == element {
+                return edge.to
+            }
+            return nil
+        }
+    }
+
+    @inlinable func path(from: T, to: T) -> [T] {
+
+    }
 }
 
 // MARK: - Private Methods
 internal extension LWWElementGraph {
-    
+
 }
