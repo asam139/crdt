@@ -44,21 +44,18 @@ final class LWWElementSetTests: XCTestCase {
     }
     
     func testRemoveElements() {
-        sut.remove(firstPair.element, date: firstPair.date)
+        XCTAssertFalse(sut.remove(firstPair.element, date: firstPair.date))
         XCTAssertTrue(sut.removeSet.dates.isEmpty, "Expect element not to be removed if the item is not already in the set")
         
         sut.add(firstPair.element, date: firstPair.date)
-        sut.remove(firstPair.element, date: firstPair.date)
+        XCTAssertTrue(sut.remove(firstPair.element, date: firstPair.date))
         XCTAssertEqual(sut.removeSet.dates.first?.value, firstPair.date, "Expect element to be removed if the element was not removed before.")
-        
-        sut.remove(firstPairOlder.element, date: firstPairOlder.date)
-        XCTAssertEqual(sut.removeSet.dates.first?.value, firstPair.date, "Expect element to be removed if the element was not removed previously")
-        
-        sut.remove(firstPairNewer.element, date: firstPairNewer.date)
+
+        XCTAssertFalse(sut.remove(firstPairNewer.element, date: firstPairNewer.date))
         XCTAssertEqual(sut.removeSet.dates.first?.value, firstPair.date, "Expect element not to be updated if the element was not added in newer date")
         
         sut.add(firstPairNewer.element, date: firstPairNewer.date)
-        sut.remove(firstPairNewer.element, date: firstPairNewer.date)
+        XCTAssertTrue(sut.remove(firstPairNewer.element, date: firstPairNewer.date))
         XCTAssertEqual(sut.removeSet.dates.first?.value, firstPairNewer.date, "Expect element to be updated if the element was added in newer date")
     }
     
@@ -68,10 +65,10 @@ final class LWWElementSetTests: XCTestCase {
         sut.add(firstPair.element, date: firstPair.date)
         XCTAssertEqual(sut.lookup(firstPair.element), firstPair.date, "Expect to return the date if the element was added.")
         
-        sut.remove(firstPairOlder.element, date: firstPairOlder.date)
+        XCTAssertTrue(sut.remove(firstPairOlder.element, date: firstPairOlder.date))
         XCTAssertEqual(sut.lookup(firstPair.element), firstPair.date, "Expect to return the date if the element was added previously to be removed.")
         
-        sut.remove(firstPairNewer.element, date: firstPairNewer.date)
+        XCTAssertTrue(sut.remove(firstPairNewer.element, date: firstPairNewer.date))
         XCTAssertNil(sut.lookup(firstPair.element), "Expect to return nil if the element was removed previouslyto be added.")
     }
 

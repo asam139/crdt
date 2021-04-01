@@ -27,9 +27,8 @@ public struct LWWElementSet<T: Hashable> {
     /// - Returns: A Date value indicating whether the element was added or nil.
     @inlinable public func lookup(_ element: T) -> Date? {
         guard let addDate = addSet.lookup(element) else { return nil }
-        
         guard let removeDate = removeSet.lookup(element) else { return addDate }
-        
+
         return addDate > removeDate ? addDate : nil
     }
     
@@ -41,6 +40,7 @@ public struct LWWElementSet<T: Hashable> {
     }
     
     /// Adds an element to this set.
+    /// - Parameters:
     /// - Parameter element: The element to add.
     /// - Parameter date: The date when `element` was added into this set. By default the current system date is used.
     @inlinable public mutating func add(_ element: T, date: Date = Date()) {
@@ -51,9 +51,13 @@ public struct LWWElementSet<T: Hashable> {
     /// - Parameters:
     /// - Parameter element: The element to remove.
     /// - Parameter date: The date when `element` was removed from this set. By default the current system date is used.
-    @inlinable public mutating func remove(_ element: T, date: Date = Date()) {
-        guard lookup(element) != nil else { return }
+    /// - Returns: A Boolean value indicating whether element was removed.
+    @discardableResult
+    @inlinable public mutating func remove(_ element: T, date: Date = Date()) -> Bool {
+        guard lookup(element) != nil else { return false }
+
         removeSet.add(element, date: date)
+        return true
     }
     
     /// Merges another set into this set.
