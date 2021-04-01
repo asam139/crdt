@@ -139,24 +139,22 @@ final class LWWElementGraphTests: XCTestCase {
         sut.addVertex(firstPair.edge.from, date: firstPair.date)
         sut.addVertex(firstPair.edge.to, date: firstPair.date)
         sut.addEdge(firstPair.edge, date: firstPair.date)
-        XCTAssertNil(sut.path(from: from, to: to), "Expect graph to have 0 path")
+        XCTAssertNil(sut.path(from: from, to: to), "Expect graph not to found any path")
 
         // Add second edge
         sut.addVertex(secondPair.edge.from, date: secondPair.date)
         sut.addVertex(secondPair.edge.to, date: secondPair.date)
         sut.addEdge(secondPair.edge, date: secondPair.date)
-        XCTAssertNotNil(sut.path(from: from, to: to), "Expect graph to have 1 path")
+        XCTAssertNotNil(sut.path(from: from, to: to), "Expect graph to found path")
 
         // Add third edge
         sut.addVertex(thirdPair.edge.from, date: thirdPair.date)
         sut.addVertex(thirdPair.edge.to, date: thirdPair.date)
         sut.addEdge(thirdPair.edge, date: thirdPair.date)
-        XCTAssertNotNil(sut.path(from: from, to: to), "Expect graph to have 1 path")
+        XCTAssertNotNil(sut.path(from: from, to: to), "Expect graph to found path")
 
-        // Add fourth edge
-        sut.addVertex(fourthPair.edge.from, date: fourthPair.date)
-        sut.addVertex(fourthPair.edge.to, date: fourthPair.date)
-        sut.addEdge(fourthPair.edge, date: fourthPair.date)
-        XCTAssertNotNil(sut.path(from: from, to: to), "Expect graph to have 2 path")
+        // Remove second vertex (also the edge)
+        sut.removeVertex(secondPair.edge.to, date: .distantFuture)
+        XCTAssertNil(sut.path(from: from, to: to), "Expect not to found any path")
     }
 }
