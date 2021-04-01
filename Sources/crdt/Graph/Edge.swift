@@ -8,11 +8,15 @@
 import Foundation
 
 public struct Edge<T: Hashable>: Hashable {
-    let from: T
-    let to: T
+    public let from: T
+    public let to: T
 
     public init(from: T, to: T) {
         self.from = from
         self.to = to
+    }
+
+    @inlinable public func contains(_ element: T) -> Bool {
+        to == element || from == element
     }
 }
