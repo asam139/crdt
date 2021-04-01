@@ -31,6 +31,16 @@ final class LWWElementSetTests: XCTestCase {
         sut.remove(firstPairNewer.element, date: firstPairNewer.date)
         XCTAssertEqual(sut.elements.count, 1, "Expect elements only to return added but not removed elements")
     }
+
+    func testExists() {
+        XCTAssertFalse(sut.exists(firstPair.element), "Expect element not to exist")
+
+        sut.add(firstPair.element, date: firstPair.date)
+        XCTAssertTrue(sut.exists(firstPair.element), "Expect element to exist")
+
+        sut.remove(firstPair.element, date: firstPair.date)
+        XCTAssertFalse(sut.exists(firstPair.element), "Expect element not to exist after being removed")
+    }
     
     func testAddElements() {
         sut.add(firstPair.element, date: firstPair.date)

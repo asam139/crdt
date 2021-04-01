@@ -25,6 +25,13 @@ final class TimeGSetTests: XCTestCase {
         sut.add(firstPair.element, date: firstPair.date)
         XCTAssertEqual(sut.elements.first, firstPair.element, "Expect element to be added")
     }
+
+    func testExists() {
+        XCTAssertFalse(sut.exists(firstPair.element), "Expect element not to exist")
+
+        sut.add(firstPair.element, date: firstPair.date)
+        XCTAssertTrue(sut.exists(firstPair.element), "Expect element to exist")
+    }
     
     func testAddElements() {
         var count = 0
