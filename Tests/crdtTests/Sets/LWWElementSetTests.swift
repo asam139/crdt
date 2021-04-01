@@ -21,6 +21,16 @@ final class LWWElementSetTests: XCTestCase {
         super.setUp()
         sut = .init()
     }
+
+    func testElements() {
+        sut.add(firstPair.element, date: firstPair.date)
+        sut.add(secondPair.element, date: secondPair.date)
+        sut.remove(firstPairOlder.element, date: firstPairOlder.date)
+        XCTAssertEqual(sut.elements.count, 2, "Expect elements only to return added but not removed elements")
+
+        sut.remove(firstPairNewer.element, date: firstPairNewer.date)
+        XCTAssertEqual(sut.elements.count, 1, "Expect elements only to return added but not removed elements")
+    }
     
     func testAddElements() {
         sut.add(firstPair.element, date: firstPair.date)

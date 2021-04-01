@@ -16,6 +16,11 @@ import Foundation
 public struct TimeGSet<T: Hashable> {
     /// A dictionary that stores the time an element was added.
     @usableFromInline internal var dates = [T: Date]()
+
+    /// Returns the added elements.
+    @inlinable public var elements: Set<T> {
+        Set(dates.keys)
+    }
     
     /// Returns the date when `element` was added to this set, if it was added.
     /// Check if the current set is a subset of another one.

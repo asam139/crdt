@@ -20,6 +20,11 @@ final class TimeGSetTests: XCTestCase {
         super.setUp()
         sut = .init()
     }
+
+    func testElements() {
+        sut.add(firstPair.element, date: firstPair.date)
+        XCTAssertEqual(sut.elements.first, firstPair.element, "Expect element to be added")
+    }
     
     func testAddElements() {
         var count = 0

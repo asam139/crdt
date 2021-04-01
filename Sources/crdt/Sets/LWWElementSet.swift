@@ -16,6 +16,11 @@ import Foundation
 public struct LWWElementSet<T: Hashable> {
     @usableFromInline internal var addSet = TimeGSet<T>()
     @usableFromInline internal var removeSet = TimeGSet<T>()
+
+    /// Returns the effective elements, namely, the added but not removed elements.
+    @inlinable public var elements: Set<T> {
+        addSet.elements.filter { lookup($0) != nil }
+    }
     
     /// Returns the last date when the element was added to this set, or nil if the element was removed or never added.
     /// - Parameter element: The element to search.
@@ -57,4 +62,5 @@ public struct LWWElementSet<T: Hashable> {
         addSet.merge(set.addSet)
         removeSet.merge(set.removeSet)
     }
+    
 }
