@@ -79,4 +79,84 @@ final class LWWElementGraphTests: XCTestCase {
         sut.addVertex(edge.from, date: date)
         XCTAssertTrue(sut.existsVertex(vertex), "Expect vertex to be exist after adding it")
     }
+
+    func testVerticesFromAnother() {
+        let firstPair: TestEdgePair = (Date(), .init(from: 1, to: 2))
+        let secondPair: TestEdgePair = (Date(), .init(from: 1, to: 3))
+
+        let firstDate = firstPair.date
+        let firstEdge = firstPair.edge
+        let secondDate = secondPair.date
+        let secondEdge = secondPair.edge
+
+        sut.addVertex(firstEdge.from, date: firstDate)
+        XCTAssertEqual(sut.vertices(from: firstEdge.from).count, 0, "Expect vertex not to have neighbours before adding none")
+
+        sut.addVertex(firstEdge.to, date: firstDate)
+        sut.addEdge(firstEdge, date: firstDate)
+        XCTAssertEqual(sut.vertices(from: firstEdge.from).count, 1, "Expect vertex to have 1 neighbour after adding one edge")
+
+        sut.addVertex(secondEdge.from, date: secondDate)
+        sut.addVertex(secondEdge.to, date: secondDate)
+        sut.addEdge(secondEdge, date: secondDate)
+        XCTAssertEqual(sut.vertices(from: firstEdge.from).count, 2, "Expect vertex to have 2 neighbours after adding two edge")
+    }
+
+    func testEdgesFromVertex() {
+        let firstPair: TestEdgePair = (Date(), .init(from: 1, to: 2))
+        let secondPair: TestEdgePair = (Date(), .init(from: 1, to: 3))
+
+        let firstDate = firstPair.date
+        let firstEdge = firstPair.edge
+        let secondDate = secondPair.date
+        let secondEdge = secondPair.edge
+
+        sut.addVertex(firstEdge.from, date: firstDate)
+        XCTAssertEqual(sut.edges(from: firstEdge.from).count, 0, "Expect vertex not to have edges before adding none")
+
+        sut.addVertex(firstEdge.to, date: firstDate)
+        sut.addEdge(firstEdge, date: firstDate)
+        XCTAssertEqual(sut.edges(from: firstEdge.from).count, 1, "Expect vertex to have 1 neighbour after adding one edge")
+
+        sut.addVertex(secondEdge.from, date: secondDate)
+        sut.addVertex(secondEdge.to, date: secondDate)
+        sut.addEdge(secondEdge, date: secondDate)
+        XCTAssertEqual(sut.edges(from: firstEdge.from).count, 2, "Expect vertex to have 2 neighbours after adding two edge")
+    }
+
+    func testPathsBetweenTwoVertex() {
+        let firstPair: TestEdgePair = (Date(), .init(from: 1, to: 2))
+        let secondPair: TestEdgePair = (Date(), .init(from: 2, to: 3))
+        let thirdPair: TestEdgePair = (Date(), .init(from: 1, to: 4))
+        let fourthPair: TestEdgePair = (Date(), .init(from: 4, to: 3))
+
+        let from = firstPair.edge.from
+        let to = secondPair.edge.to
+
+        XCTAssertNil(sut.path(from: from, to: to), "Expect graph not to have paths between two vertices not to be added")
+
+        // Add first edge
+        sut.addVertex(firstPair.edge.from, date: firstPair.date)
+        sut.addVertex(firstPair.edge.to, date: firstPair.date)
+        sut.addEdge(firstPair.edge, date: firstPair.date)
+        XCTAssertNil(sut.path(from: from, to: to), "Expect graph to have 0 path")
+
+        // Add second edge
+        sut.addVertex(secondPair.edge.from, date: secondPair.date)
+        sut.addVertex(secondPair.edge.to, date: secondPair.date)
+        sut.addEdge(secondPair.edge, date: secondPair.date)
+        XCTAssertNotNil(sut.path(from: from, to: to), "Expect graph to have 1 path")
+
+        // Add third edge
+        sut.addVertex(thirdPair.edge.from, date: thirdPair.date)
+        sut.addVertex(thirdPair.edge.to, date: thirdPair.date)
+        sut.addEdge(thirdPair.edge, date: thirdPair.date)
+        XCTAssertNotNil(sut.path(from: from, to: to), "Expect graph to have 1 path")
+
+        // Add fourth edge
+        sut.addVertex(fourthPair.edge.from, date: fourthPair.date)
+        sut.addVertex(fourthPair.edge.to, date: fourthPair.date)
+        sut.addEdge(fourthPair.edge, date: fourthPair.date)
+        XCTAssertNotNil(sut.path(from: from, to: to), "Expect graph to have 2 path")
+    }
 }

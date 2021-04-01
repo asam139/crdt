@@ -16,6 +16,7 @@ public struct LWWElementGraph<T: Hashable> {
     @usableFromInline internal var verticesSet = LWWElementSet<T>()
 
     /// Set to store edges
+    //internal var neighbours = [T: Set<LWWEdge>]
     @usableFromInline internal var edgesSet = LWWElementSet<LWWEdge>()
 }
 
@@ -45,7 +46,7 @@ public extension LWWElementGraph {
 
     @discardableResult
     @inlinable mutating func addEdge(_ edge: LWWEdge, date: Date = Date()) -> Bool {
-        guard verticesSet.lookup(edge.from) != nil && verticesSet.lookup(edge.to) != nil else { return false }
+        guard existsVertex(edge.from) && existsVertex(edge.to) else { return false }
 
         edgesSet.add(edge, date: date)
         return true
@@ -64,11 +65,11 @@ public extension LWWElementGraph {
             let (from, to) = (edge.from, edge.to)
             let elements = edgesSet.elements
 
-            if elements.contains(where: { $0.contains(from) }) { // `from` has other edges
+            if !elements.contains(where: { $0.contains(from) }) { // `from` has other edges
                 verticesSet.remove(from, date: date)
             }
 
-            if elements.contains(where: { $0.contains(to) }) { // `to` has other edges
+            if !elements.contains(where: { $0.contains(to) }) { // `to` has other edges
                 verticesSet.remove(to, date: date)
             }
         }
@@ -77,7 +78,7 @@ public extension LWWElementGraph {
 
     @inlinable func existsVertex(_ element: T) -> Bool { verticesSet.exists(element) }
 
-    @inlinable func verticesConnectedTo(_ element: T) -> [T] {
+    @inlinable func vertices(from element: T) -> [T] {
         edgesSet.elements.compactMap { edge in
             if edge.to == element {
                 return edge.from
@@ -88,12 +89,43 @@ public extension LWWElementGraph {
         }
     }
 
-    @inlinable func path(from: T, to: T) -> [T] {
+    @inlinable func edges(from: T) -> [LWWEdge] {
+        edgesSet.elements.filter { $0.from == from }
+    }
 
+    func path(from: T, to: T) -> [T]? {
+        depthFirstSearch(from: from, to: to)?.array
     }
 }
 
 // MARK: - Private Methods
 internal extension LWWElementGraph {
+    /// Depth first search algorithm
+    func depthFirstSearch(from: T, to: T) -> Stack<T>? {
+        var visited = Set<T>()
+        var stack = Stack<T>()
 
+        stack.push(from)
+        visited.insert(from)
+
+        outer: while let vertex = stack.peek(), vertex != to {
+            let neighbours = edges(from: vertex)
+            guard neighbours.count > 0 else {
+                _ = stack.pop() // backtrack
+                continue
+            }
+
+            for edge in neighbours {
+                if !visited.contains(edge.to) {
+                    visited.insert(edge.to)
+                    stack.push(edge.to)
+                    continue outer
+                }
+            }
+
+            _ = stack.pop() // backtrack
+        }
+
+        return stack.array.isEmpty ? nil : stack
+    }
 }

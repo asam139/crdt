@@ -8,7 +8,7 @@
 import Foundation
 
 public struct Edge<T: Hashable>: Hashable {
-    public let from: T
+    public var from: T
     public let to: T
 
     public init(from: T, to: T) {
