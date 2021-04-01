@@ -18,7 +18,6 @@ final class EdgeTests: XCTestCase {
     override func setUp() {
         super.setUp()
         sut = Edge(from: from, to: to)
-        sut2 = Edge(from: from, to: to)
     }
 
     func testInitWithFromAndTo() {

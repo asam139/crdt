@@ -6,5 +6,7 @@
 //
 
 import Foundation
+@testable import crdt
 
 typealias TestPair = (date: Date, element: Int)
+typealias TestEdgePair = (date: Date, edge: Edge<Int>)
