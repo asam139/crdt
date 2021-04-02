@@ -35,7 +35,7 @@ public struct TimeGSet<T: Hashable> {
     /// Checks if the current set is a subset of another one.
     /// - Parameter set: The other set.
     /// - Returns: A Boolean value indicating whether the instance is a subset.
-    @inlinable public func isSubset(of set: Self<T>) -> Bool {
+    @inlinable public func isSubset(of set: Self) -> Bool {
         dates.allSatisfy { set.lookup($0.key) != nil }
     }
     
@@ -52,7 +52,7 @@ public struct TimeGSet<T: Hashable> {
     /// Merges another set into this set, selecting the later timestamp if there are multiple for the same element.
     ///
     /// - Parameter anotherSet: The set to merge into this set.
-    @inlinable public mutating func merge(_ set: Self<T>) {
+    @inlinable public mutating func merge(_ set: Self) {
         dates.merge(set.dates) { (current, new) in max(current, new) }
     }
 }

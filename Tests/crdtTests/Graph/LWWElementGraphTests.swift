@@ -124,11 +124,10 @@ final class LWWElementGraphTests: XCTestCase {
         XCTAssertEqual(sut.edges(from: firstEdge.from).count, 2, "Expect vertex to have 2 neighbours after adding two edge")
     }
 
-    func testPathsBetweenTwoVertex() {
+    func testPathBetweenTwoVertex() {
         let firstPair: TestEdgePair = (Date(), .init(from: 1, to: 2))
         let secondPair: TestEdgePair = (Date(), .init(from: 2, to: 3))
         let thirdPair: TestEdgePair = (Date(), .init(from: 1, to: 4))
-        let fourthPair: TestEdgePair = (Date(), .init(from: 4, to: 3))
 
         let from = firstPair.edge.from
         let to = secondPair.edge.to
@@ -156,5 +155,30 @@ final class LWWElementGraphTests: XCTestCase {
         // Remove second vertex (also the edge)
         sut.removeVertex(secondPair.edge.to, date: .distantFuture)
         XCTAssertNil(sut.path(from: from, to: to), "Expect not to found any path")
+    }
+
+    func testMergeGraph() {
+        let firstPair: TestEdgePair = (Date(), .init(from: 1, to: 2))
+        let secondPair: TestEdgePair = (Date(), .init(from: 2, to: 3))
+
+        // Prepare first graph
+        sut.addVertex(firstPair.edge.from, date: firstPair.date)
+        sut.addVertex(firstPair.edge.to, date: firstPair.date)
+        sut.addEdge(firstPair.edge, date: firstPair.date)
+
+        // Prepare second graph
+        var secondGraph = LWWElementGraph<Int>()
+        secondGraph.addVertex(secondPair.edge.from, date: secondPair.date)
+        secondGraph.addVertex(secondPair.edge.to, date: secondPair.date)
+        secondGraph.addEdge(secondPair.edge, date: secondPair.date)
+
+        sut.merge(secondGraph)
+        let from = firstPair.edge.from
+        let to = secondPair.edge.to
+        XCTAssertNotNil(sut.path(from: from, to: to), "Expect graph to found path")
+
+        secondGraph.removeEdge(secondPair.edge, date: .distantFuture)
+        sut.merge(secondGraph)
+        XCTAssertNil(sut.path(from: from, to: to), "Expect graph not to found path")
     }
 }

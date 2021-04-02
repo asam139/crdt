@@ -96,6 +96,11 @@ public extension LWWElementGraph {
     func path(from: T, to: T) -> [T]? {
         depthFirstSearch(from: from, to: to)?.array
     }
+
+    mutating func merge(_ graph: Self) {
+        verticesSet.merge(graph.verticesSet)
+        edgesSet.merge(graph.edgesSet)
+    }
 }
 
 // MARK: - Private Methods
