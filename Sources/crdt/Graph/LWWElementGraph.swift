@@ -16,7 +16,6 @@ public struct LWWElementGraph<T: Hashable> {
     @usableFromInline internal var verticesSet = LWWElementSet<T>()
 
     /// Set to store edges
-    //internal var neighbours = [T: Set<LWWEdge>]
     @usableFromInline internal var edgesSet = LWWElementSet<LWWEdge>()
 }
 
@@ -28,13 +27,20 @@ public extension LWWElementGraph {
     /// Returns the effective edges, namely, the added but not removed elements.
     @inlinable var edges: Set<LWWEdge> { edgesSet.elements }
 
-
+    /// Addes a vertex to this graph.
+    /// - Parameters:
+    ///   - element: The vertex to be added.
+    ///   - date: The date when vertex was added into this set. By default the current system date is used.
     @inlinable mutating func addVertex(_ element: T, date: Date = Date()) {
         verticesSet.add(element, date: date)
     }
 
-    @discardableResult
-    @inlinable mutating func removeVertex(_ element: T, date: Date = Date()) -> Bool {
+    /// Removes a vertex if it is added. Besides, it removes all invalid edges connected to the vertex.
+    /// - Parameters:
+    ///   - element: The vertex to be removed.
+    ///   - date: The date when vertex was removed into this set. By default the current system date is used.
+    /// - Returns: A Boolean value indicating if the vertex can be removed.
+    @discardableResult @inlinable mutating func removeVertex(_ element: T, date: Date = Date()) -> Bool {
         let wasRemoved = verticesSet.remove(element, date: date)
         if wasRemoved { // Remove invalid edges
             edgesSet.elements.filter { $0.contains(element) }.forEach {
@@ -44,22 +50,33 @@ public extension LWWElementGraph {
         return wasRemoved
     }
 
-    @discardableResult
-    @inlinable mutating func addEdge(_ edge: LWWEdge, date: Date = Date()) -> Bool {
+    /// Adds an edge to the graph if it is possible, namely, both vertices have to exist.
+    /// - Parameters:
+    ///   - edge: The edge to be added.
+    ///   - date: The date when edge was added into this set. By default the current system date is used.
+    /// - Returns: A Boolean value indicating if the edge can be added.
+    @discardableResult @inlinable mutating func addEdge(_ edge: LWWEdge, date: Date = Date()) -> Bool {
         guard existsVertex(edge.from) && existsVertex(edge.to) else { return false }
-
         edgesSet.add(edge, date: date)
         return true
     }
 
-    @discardableResult
-    @inlinable mutating func addEdge(from: T, to: T, date: Date = Date()) -> Bool {
-        let edge = LWWEdge(from: from, to: to)
-        return addEdge(edge, date: date)
+    /// Adds an edge using its both vertices to the graph if it is possible, namely, both vertices have to exist.
+    /// - Parameters:
+    ///   - from: The `from` vertex of the edge.
+    ///   - to: The `to` vertex of the edge.
+    ///   - date: The date when edge was added into this set. By default the current system date is used.
+    /// - Returns: A Boolean value indicating if the edge can be added.
+    @discardableResult @inlinable mutating func addEdge(from: T, to: T, date: Date = Date()) -> Bool {
+        addEdge(LWWEdge(from: from, to: to), date: date)
     }
 
-    @discardableResult
-    @inlinable mutating func removeEdge(_ edge: LWWEdge, date: Date = Date()) -> Bool {
+    /// Removes an edge from the graph removing the vertices if they have not more connections.
+    /// - Parameters:
+    ///   - edge: The edge to be removed
+    ///   - date: The date when edge was removed into this set. By default the current system date is used.
+    /// - Returns: A Boolean value indicating if the edge can be removed.
+    @discardableResult @inlinable  mutating func removeEdge(_ edge: LWWEdge, date: Date = Date()) -> Bool {
         let wasRemoved = edgesSet.remove(edge, date: date)
         if wasRemoved { // Remove `from` or `to` if they have no other edges
             let (from, to) = (edge.from, edge.to)
@@ -76,8 +93,16 @@ public extension LWWElementGraph {
         return wasRemoved
     }
 
-    @inlinable func existsVertex(_ element: T) -> Bool { verticesSet.exists(element) }
+    /// Checks if it exists a vertex in the graph.
+    /// - Parameter element: The vertex to check.
+    /// - Returns: A Boolean value indicating whether the vertex exists.
+    @inlinable func existsVertex(_ element: T) -> Bool {
+        verticesSet.exists(element)
+    }
 
+    /// Finds all vertices connected to one vertex, namely, all the neighbours, it doesn't care if it is input or output.
+    /// - Parameter from: The vertex from searching.
+    /// - Returns: An array with all vertices.
     @inlinable func vertices(from element: T) -> [T] {
         edgesSet.elements.compactMap { edge in
             if edge.to == element {
@@ -89,14 +114,26 @@ public extension LWWElementGraph {
         }
     }
 
+    /// Finds all edges from a vertex, namely, all the neighbours.
+    /// - Parameter from: The vertex from searching.
+    /// - Returns: An array with all edges.
     @inlinable func edges(from: T) -> [LWWEdge] {
         edgesSet.elements.filter { $0.from == from }
     }
 
+    /// Finds any path between two vertices if exists using Depth-First search (DFS) algorithm
+    /// References:
+    /// <https://en.wikipedia.org/wiki/Depth-first_search>
+    /// - Parameters:
+    ///   - from: The start vertex.
+    ///   - to: The end vertex.
+    /// - Returns: Returns an array with all vertices that defines the path.
     func path(from: T, to: T) -> [T]? {
         depthFirstSearch(from: from, to: to)?.array
     }
 
+    /// Merges a graph to this graph
+    /// - Parameter graph: The other graph.
     mutating func merge(_ graph: Self) {
         verticesSet.merge(graph.verticesSet)
         edgesSet.merge(graph.edgesSet)
