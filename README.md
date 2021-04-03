@@ -15,5 +15,5 @@ The graph allows:
 ## References
 
  * https://github.com/pfrazee/crdt_notes
- * https://en.wikipedia.org/wiki/Conflict-free_replicated_data_type ● https://github.com/pfrazee/crdt_notes
+ * https://en.wikipedia.org/wiki/Conflict-free_replicated_data_type
  * https://hal.inria.fr/inria-00555588/PDF/techreport.pdf
