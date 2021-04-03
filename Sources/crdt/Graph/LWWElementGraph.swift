@@ -7,7 +7,14 @@
 
 import Foundation
 
-/// LWWElementGraph
+/// Last-Writer-Wins-Element graph represents pairwise relationships between objects, nodes/vertices and edges.
+/// The graph keeps each update with a timestamp to know the most recent update.
+/// The vertices and edges are represented using two set of kind LWW which are prepared to keep the track of
+/// adding and removing of each instance by timestamps.
+///
+/// References:
+/// <https://github.com/pfrazee/crdt_notes>
+///
 public struct LWWElementGraph<T: Hashable> {
     /// Specific representation for a edge
     public typealias LWWEdge = Edge<T>
